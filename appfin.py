@@ -59,29 +59,48 @@ encoded_df = encoded_df.reindex(columns=model_columns, fill_value=0)
 if st.button("Check Loan Approval"):
     probability = model.predict_proba(encoded_df)[0, 1]
 
-    st.write(f"Predicted loan approval probability: **{probability:.2%}**")
-    col1, col2, col3 = st.columns(3)
+    # Title
+    st.write(f"### 📊 Loan Approval Probability: {probability:.2%}")
+
+    # Risk Indicator
+    if probability >= 0.7:
+        st.success("🟢 High Approval Chance")
+    elif probability >= 0.4:
+        st.warning("🟡 Medium Approval Chance")
+    else:
+        st.error("🔴 Low Approval Chance")
+
+    # Progress Bar
+    st.progress(float(probability))
+
+    # Bar Chart
+    chart_data = pd.DataFrame({
+        'Category': ['Approval', 'Rejection'],
+        'Probability': [probability, 1 - probability]
+    })
+    st.bar_chart(chart_data.set_index('Category'))
+
+    # Metrics
+    col1, col2 = st.columns(2)
     with col1:
-        st.metric("Loan Approval Probability", f"{probability * 100:.2f}%")
+        st.metric("Approval Probability", f"{probability*100:.2f}%")
     with col2:
-        st.metric(
-            "Risk Level",
-            "Low" if probability >= 0.7 else "Medium" if probability >= 0.4 else "High"
-        )
-    with col3:
-        st.metric("Model Type", "Logistic Regression")
+        st.metric("Model", "Logistic Regression")
 
-    if probability >= 0.7:
-        st.success("High probability of loan approval.")
-    elif probability >= 0.4:
-        st.warning("Moderate probability of loan approval.")
-    else:
-        st.error("Low probability of loan approval.")
+    # Insights
+    st.subheader("📌 Key Factors Affecting Decision")
 
-    st.subheader("Key insight")
-    if probability >= 0.7:
-        st.write("This applicant shows a strong chance of getting loan approval based on the entered business and credit details.")
-    elif probability >= 0.4:
-        st.write("This applicant shows a moderate chance of loan approval access. Improving credit profile may increase access.")
+    if credit_score > 700:
+        st.write("✅ High credit score increases approval chances")
     else:
-        st.write("This applicant shows a low chance of loan approval access. Risk-related factors may be limiting access to credit.")
+        st.write("⚠️ Low credit score may reduce approval chances")
+
+    if loan_percent_income > 0.4:
+        st.write("⚠️ High loan burden compared to income")
+    else:
+        st.write("✅ Healthy loan-to-income ratio")
+
+    if prev_default == "Yes":
+        st.write("⚠️ Previous loan default negatively impacts approval")
+    else:
+        st.write("✅ No previous defaults improves approval chances")
