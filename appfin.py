@@ -56,7 +56,7 @@ encoded_df = pd.get_dummies(raw_df, columns=cat_cols, drop_first=True)
 # Match columns used in model (missing ones become 0)
 encoded_df = encoded_df.reindex(columns=model_columns, fill_value=0)
 
-if st.button("Check Loan Approval")::
+if st.button("Check Loan Approval"):
     probability = model.predict_proba(encoded_df)[0, 1]
 
     st.write(f"Predicted loan approval probability: **{probability:.2%}**")
