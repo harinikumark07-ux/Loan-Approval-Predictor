@@ -79,6 +79,14 @@ if st.button("Check Loan Approval"):
         'Probability': [probability, 1 - probability]
     })
     st.bar_chart(chart_data.set_index('Category'))
+    st.subheader("📊 Approval Distribution")
+
+pie_data = pd.DataFrame({
+    'Category': ['Approval', 'Rejection'],
+    'Values': [probability, 1 - probability]
+})
+
+st.write(pie_data.set_index('Category'))
 
     # Metrics
     col1, col2 = st.columns(2)
